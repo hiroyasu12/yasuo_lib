@@ -18,7 +18,7 @@ def calc_bolinger(period: int, sigma: float, p_list: list): #期間、マルチ�
 
 def calc_rsi(period:int, p_list:list): #移動平均の期間と価格のn足リスト(データはperiod個以上であること)
     ##差分を計算する
-    df = pd.DataFrame(list, columns=['price'])
+    df = pd.DataFrame(p_list, columns=['price'])
     diff = df.diff()
     # 最初のレコードが欠損してしまうので落としてあげる
     diff = diff[1:]
