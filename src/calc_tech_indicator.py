@@ -1,4 +1,4 @@
- # 必要なライブラリの読み込み
+# 必要なライブラリの読み込み
 import pandas as pd
 
 # ボリンジャーバンドの関数
@@ -6,18 +6,24 @@ from pyti.bollinger_bands import upper_bollinger_band as bb_up
 from pyti.bollinger_bands import middle_bollinger_band as bb_mid
 from pyti.bollinger_bands import lower_bollinger_band as bb_low
 
-def calc_bolinger(period: int, sigma: float, p_list: list): #期間、マルチ、価格のn足リスト（データはperiod個以上であること）
-    eth_df = pd.DataFrame(p_list, columns = ['price'])
-    _bb_up = bb_up(p_list,period,sigma)
-    _bb_mid = bb_mid(p_list,period,sigma)
-    _bb_low = bb_low(p_list,period,sigma)
-    eth_df['bb_up'] = _bb_up #上側
-    eth_df['bb_mid'] = _bb_mid #移動平均
-    eth_df['bb_low'] = _bb_low #下限
+
+# 期間、マルチ、価格のn足リスト（データはperiod個以上であること）
+def calc_bolinger(period: int, sigma: float, p_list: list):
+    eth_df = pd.DataFrame(p_list, columns=['price'])
+    _bb_up = bb_up(p_list, period, sigma)
+    _bb_mid = bb_mid(p_list, period, sigma)
+    _bb_low = bb_low(p_list, period, sigma)
+    eth_df['bb_up'] = _bb_up  # 上側
+    eth_df['bb_mid'] = _bb_mid  # 移動平均
+    eth_df['bb_low'] = _bb_low  # 下限
     return eth_df
 
-def calc_rsi(period:int, p_list:list): #移動平均の期間と価格のn足リスト(データはperiod個以上であること)
-    ##差分を計算する
+# RSI計算
+
+
+def calc_rsi(period: int, p_list: list):
+    # 移動平均の期間と価格のn足リスト(データはperiod個以上であること)
+    # 差分を計算する
     df = pd.DataFrame(list, columns=['price'])
     diff = df.diff()
     # 最初のレコードが欠損してしまうので落としてあげる
