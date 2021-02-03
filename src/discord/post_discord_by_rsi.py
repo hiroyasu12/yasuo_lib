@@ -1,4 +1,4 @@
- # 必要なライブラリの読み込み
+# 必要なライブラリの読み込み
 import pandas as pd
 from datetime import datetime
 import requests
@@ -6,8 +6,9 @@ import json
 import numpy
 import python_bitbankcc
 import time
+import setting_API_env as settingEnv
 
-from bitbank.yasuo_lib import calc_tech_indicator 
+from bitbank.yasuo_lib import calc_tech_indicator
 
 # インスタンスを定義する
 pub = python_bitbankcc.public()
@@ -16,12 +17,16 @@ trading_coin = 'btc_jpy'
 interval = 300
 period = 16
 sigma = 1.6
+webhook_url = settingEnv.discordAPI
 
-headers      = {'Content-Type': 'application/json'}
+headers = {'Content-Type': 'application/json'}
 
 # cryptowatchのAPIから5分単位のビットコインの価格を取得してデータフレームにする関数
+
+
 def get_btcprice():
-    url = 'https://api.cryptowat.ch/markets/bitflyer/btcjpy/ohlc?periods='+str(interval)+'&after=' + str(int(time.time()-interval * period))
+    url = 'https://api.cryptowat.ch/markets/bitflyer/btcjpy/ohlc?periods=' + \
+        str(interval)+'&after=' + str(int(time.time()-interval * period))
     r = requests.get(url)
     r2 = json.loads(r.text)
     pricedata = []
@@ -30,8 +35,9 @@ def get_btcprice():
         price = data[4]
         vol = data[5]
         pricedata.append([dt, price, vol])
-    return pd.DataFrame(pricedata, columns=['date','price','vol'])
-##############BOT本体################# 
+    return pd.DataFrame(pricedata, columns=['date', 'price', 'vol'])
+##############BOT本体#################
+
 
 pastd = datetime.today()
 eth_df = get_btcprice()
@@ -42,8 +48,8 @@ while True:
     d = datetime.today()
     #d_hm = d.strptime(d.strftime("%H:%M"), "%H:%M")
     #pastd_hm = pastd.strptime(pastd.strftime("%H:%M"), "%H:%M")
-    if True:#d_hm > pastd_hm :
-        #関数を使ってビットコインの価格データを取得する 
+    if True:  # d_hm > pastd_hm :
+        # 関数を使ってビットコインの価格データを取得する
         #eth_df = get_btcprice()
         last_price = pub.get_ticker('btc_jpy')
         p_list.append(int(last_price['last']))
@@ -53,23 +59,25 @@ while True:
             last_rsi = float(df_rsi['rsi'][df_rsi['rsi'].size - 1])
             if last_rsi < 20 and a != 1:
                 main_content = {
-                        "allowed_mentions": {
+                    "allowed_mentions": {
                         "parse": ["users", "roles"],
                         "users": []
-                        },
+                    },
                     'content': '<@&806199768396595281> BTC/JPYのRSIが20を割りました！買い時かも！'
                 }
-                response = requests.post(webhook_url, json.dumps(main_content), headers=headers)
+                response = requests.post(
+                    webhook_url, json.dumps(main_content), headers=headers)
                 a = 1
             elif last_rsi > 70 and a != 2:
                 main_content = {
-                        "allowed_mentions": {
+                    "allowed_mentions": {
                         "parse": ["users", "roles"],
                         "users": []
-                        },
+                    },
                     'content': '<@&806199768396595281> BTC/JPYのRSIが70を超えました！売り時かも！'
                 }
-                response = requests.post(webhook_url, json.dumps(main_content), headers=headers)
+                response = requests.post(
+                    webhook_url, json.dumps(main_content), headers=headers)
                 a = 2
             elif last_rsi >= 40 and last_rsi <= 50:
                 a = 0
