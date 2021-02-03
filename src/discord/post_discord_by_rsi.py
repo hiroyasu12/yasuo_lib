@@ -7,8 +7,10 @@ import numpy
 import python_bitbankcc
 import time
 import setting_API_env as settingEnv
-
-from bitbank.yasuo_lib import calc_tech_indicator
+import os, sys
+sys.path.append('../')
+#print(os.getcwd())
+from src.main import calc_tech_indicator
 
 # インスタンスを定義する
 pub = python_bitbankcc.public()
