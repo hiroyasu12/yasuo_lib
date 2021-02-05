@@ -1,3 +1,4 @@
+# 価格のリストを受け取ってpd.DataFrameを返す関数を定義する
 # 必要なライブラリの読み込み
 import pandas as pd
 
@@ -36,3 +37,17 @@ def calc_rsi(period:int, p_list:list): #移動平均の期間と価格のn足リ
     RSI = 100.0 - (100.0 / (1.0 + RS))
     ret = pd.concat([df, RSI.rename(columns={'price': 'rsi'})], axis=1)
     return ret
+
+def calc_macd(sma_big: int, sma_small: int, signal: int, p_list: list):
+    #それぞれの移動平均を計算する
+    df = pd.DataFrame(p_list, columns=['price'])
+    short_window = df.rolling(window=sma_big, center=False).mean()
+    long_window = df.rolling(window=sma_small, center=False).mean()
+    # macdの計算
+    macd = short_window - long_window
+    df_signal = macd.rolling(window=signal, center=False).mean()
+    ret = pd.concat([df, long_window.rename(columns={'price':'sma_big'}), short_window.rename(columns={'price':'sma_small'}), macd.rename(columns={'price':'macd'}), df_signal.rename(columns={'price':'signal'})], axis=1)
+    return ret
+
+def calc_dmi(length: int, adx: int, p_list: list):
+    return False
